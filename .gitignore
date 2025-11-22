@@ -16,3 +16,7 @@ node_modules
 *.log
 *.aux
 *~
+
+# code editors
+.vscode
+.idea

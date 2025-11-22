@@ -22,5 +22,5 @@ ARG REGION
 
 # Command to start the matcher server with standard configuration for map server and map matching
 # Note: Replace <VERSION> with the actual version number of Barefoot
-CMD java -jar target/barefoot-0.1.5-matcher-jar-with-dependencies.jar --geojson config/server.properties config/genevois.properties
+CMD java -jar target/barefoot-${VERSION}-matcher-jar-with-dependencies.jar --geojson config/server.properties config/${REGION}.properties
 
