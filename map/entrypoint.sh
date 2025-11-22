@@ -35,7 +35,6 @@ echo "Stopping temporary cluster..."
 pg_ctlcluster 9.3 main stop
 
 # Start Postgres in FOREGROUND (Official Docker way)
-# This replaces 'service start && sleep infinity'
 # We execute the binary directly so it becomes the main process
 echo "Starting PostgreSQL 9.3 in foreground..."
 
