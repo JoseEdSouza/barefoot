@@ -15,7 +15,7 @@ services:
       - barefoot-map:/mnt/map
       - barefoot-db:/var/lib/postgresql/9.3/main
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: [ "CMD-SHELL", "su - postgres -c 'pg_isready'" ]
       interval: 10s
       timeout: 5s
       retries: 5
