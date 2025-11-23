@@ -13,7 +13,7 @@ RUN mvn package -DskipTests
 # Expose the port that the matcher server will run on
 EXPOSE 1234
 
-COPY docker-entrypoint.sh /barefoot/
+COPY docker/matcher/entrypoint.sh /barefoot/docker-entrypoint.sh
 RUN chmod +x /barefoot/docker-entrypoint.sh
 
 ENTRYPOINT ["/barefoot/docker-entrypoint.sh"]
