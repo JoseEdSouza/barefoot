@@ -10,14 +10,14 @@ services:
     ports:
       - "5438:5432"
     environment:
-      MAP_OSM_PBF_PATH: "/mnt/data/ohare-filtered.osm.pbf"
+      MAP_OSM_PBF_PATH: "/mnt/data/map.osm.pbf"
       POSTGRES_DB: "osm"
       POSTGRES_USER: "osm"
       POSTGRES_PASSWORD: "osm"
       MAP_MODE: "slim"
     volumes:
       # Mount the OSM PBF file (read-only)
-      - ./map/osm/ohare-filtered.osm.pbf:/mnt/data/ohare-filtered.osm.pbf:ro
+      - ./map/osm/map.osm.pbf:/mnt/data/map.osm.pbf:ro
       # Persistent volumes for map data and database
       - barefoot-map:/mnt/map
       - barefoot-db:/var/lib/postgresql/9.3/main
