@@ -1,9 +1,5 @@
 # Use Java 8 as the base image since Barefoot requires Java version 7 or higher
-FROM openjdk:8
-
-# Install Maven, which is required for building the Barefoot JAR
-RUN apt-get update && \
-    apt-get install -y maven
+FROM maven:3.8.6-jdk-8
 
 # Copy the Barefoot source code into the container
 COPY . /barefoot
@@ -17,10 +13,12 @@ RUN mvn package -DskipTests
 # Expose the port that the matcher server will run on
 EXPOSE 1234
 
-ARG VERSION
-ARG REGION
+COPY docker-entrypoint.sh /barefoot/
+RUN chmod +x /barefoot/docker-entrypoint.sh
+
+ENTRYPOINT ["/barefoot/docker-entrypoint.sh"]
 
 # Command to start the matcher server with standard configuration for map server and map matching
 # Note: Replace <VERSION> with the actual version number of Barefoot
-CMD java -jar target/barefoot-${VERSION}-matcher-jar-with-dependencies.jar --geojson config/server.properties config/${REGION}.properties
+CMD java -jar target/barefoot-0.1.5-matcher-jar-with-dependencies.jar --slimjson config/server.properties config/map.properties
 

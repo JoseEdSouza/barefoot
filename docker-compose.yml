@@ -6,7 +6,9 @@ services:
       - "5438:5432"
     environment:
       OSM_PBF_PATH: "/mnt/data/ohare-filtered.osm.pbf"
-      OSM_DB_NAME: "ohare"
+      OSM_DB_NAME: "osm"
+      OSM_DB_USER: "osm"
+      OSM_DB_PASSWORD: "osm"
     volumes:
       - ./map/osm/ohare-filtered.osm.pbf:/mnt/data/ohare-filtered.osm.pbf:ro
       - barefoot-map:/mnt/map
@@ -19,11 +21,36 @@ services:
 
 
   matcher-server:
-    image: barefoot-match:latest
+    build:
+      context: .
     ports:
       - "1234:1234"
+    environment:
+      # Server properties
+      # SERVER__SERVER_PORT: 1234
+      # SERVER__SERVER_TIMEOUT_REQUEST: 150000
+      # SERVER__SERVER_TIMEOUT_RESPONSE: 600000
+      # SERVER__SERVER_CONNECTIONS: 20
+      # SERVER__MATCHER_SIGMA: 10
+      # SERVER__MATCHER_LAMBDA: 0.0
+      # SERVER__MATCHER_DISTANCE_MAX: 15000
+      # SERVER__MATCHER_RADIUS_MAX: 200
+      # SERVER__MATCHER_INTERVAL_MIN: 1000
+      # SERVER__MATCHER_DISTANCE_MIN: 0
+      # SERVER__MATCHER_THREADS: 8
+      # SERVER__MATCHER_SHORTENTURNS: true
+      
+      # Map properties 
+      MAP__DATABASE_HOST: map-server
+      MAP__DATABASE_PORT: 5432
+      MAP__DATABASE_NAME: osm
+      MAP__DATABASE_USER: osm
+      MAP__DATABASE_PASSWORD: osm
+      # MAP__DATABASE_TABLE: bfmap_ways
+      # MAP__DATABASE_ROAD_TYPES: ./map/tools/road-types.json
     depends_on:
-      - map-server
+      map-server:
+        condition: service_healthy
       
 volumes:
   barefoot-map:
