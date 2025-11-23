@@ -2,7 +2,7 @@
 set -e
 
 # Define database name from environment variable
-DB_NAME="${OSM_DB_NAME}"
+DB_NAME="${POSTGRES_DB}"
 
 # Start the cluster temporarily to check/import data
 # Using pg_ctlcluster wrapper specific to Debian/Ubuntu based images
@@ -15,19 +15,19 @@ else
     echo "Database '${DB_NAME}' not found. Running import.sh..."
 
     # Validation for PBF path
-    if [ "$OSM_PBF_PATH" = "NULL" ] || [ ! -f "$OSM_PBF_PATH" ]; then
-      echo "ERROR: OSM_PBF_PATH is not set or file does not exist: $OSM_PBF_PATH"
+    if [ "$MAP_OSM_PBF_PATH" = "NULL" ] || [ ! -f "$MAP_OSM_PBF_PATH" ]; then
+      echo "ERROR: OSM_PBF_PATH is not set or file does not exist: $MAP_OSM_PBF_PATH"
       exit 1
     fi
 
     # Execute the import script
     bash /mnt/map/osm/import.sh \
-      "${OSM_PBF_PATH}" \
-      "${OSM_DB_NAME}" \
-      "${OSM_DB_USER}" \
-      "${OSM_DB_PASSWORD}" \
+      "${MAP_OSM_PBF_PATH}" \
+      "${POSTGRES_DB}" \
+      "${POSTGRES_USER}" \
+      "${POSTGRES_PASSWORD}" \
       "/mnt/map/tools/road-types.json" \
-      "${OSM_MAP_MODE}"
+      "${MAP_MODE}"
 fi
 
 # Stop the temporary cluster
