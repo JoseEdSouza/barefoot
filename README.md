@@ -35,9 +35,10 @@ Barefoot is now ready to run with Docker Compose! This is the easiest way to get
     ```
 
     This command will:
-    *   Build the `map-server` image (if not already built).
-    *   Build the `matcher-server` image.
-    *   Build the `tracker-server` image.
+    *   Pull the latest images from GitHub Container Registry:
+        *   `ghcr.io/joseedsouza/barefoot/barefoot-map:latest`
+        *   `ghcr.io/joseedsouza/barefoot/barefoot-matcher:latest`
+        *   `ghcr.io/joseedsouza/barefoot/barefoot-tracker:latest`
     *   Start all three containers in the background.
 
 2.  **Access the services:**
@@ -59,6 +60,16 @@ Barefoot is now ready to run with Docker Compose! This is the easiest way to get
     ```bash
     docker-compose logs -f
     ```
+
+### Building from Source (Local Development)
+
+If you want to build the images locally (e.g., for development or if you've made changes to the code), use the `local.docker-compose.yaml` file:
+
+```bash
+docker-compose -f local.docker-compose.yaml up -d --build
+```
+
+This will build the images from the local context instead of pulling them from the registry.
 
 ### Configuration & Features
 
