@@ -20,7 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-
   matcher-server:
     build:
       context: .
@@ -76,7 +75,7 @@ services:
     depends_on:
       map-server:
         condition: service_healthy
-      
+
 volumes:
   barefoot-map:
   barefoot-db:
