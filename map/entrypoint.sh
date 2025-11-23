@@ -27,7 +27,7 @@ else
       "${OSM_DB_USER}" \
       "${OSM_DB_PASSWORD}" \
       "/mnt/map/tools/road-types.json" \
-      "slim"
+      "${OSM_MAP_MODE}"
 fi
 
 # Stop the temporary cluster

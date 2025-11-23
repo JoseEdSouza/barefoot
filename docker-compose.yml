@@ -9,6 +9,7 @@ services:
       OSM_DB_NAME: "osm"
       OSM_DB_USER: "osm"
       OSM_DB_PASSWORD: "osm"
+      OSM_MAP_MODE: "slim"
     volumes:
       - ./map/osm/ohare-filtered.osm.pbf:/mnt/data/ohare-filtered.osm.pbf:ro
       - barefoot-map:/mnt/map
@@ -39,7 +40,7 @@ services:
       # SERVER__MATCHER_DISTANCE_MIN: 0
       # SERVER__MATCHER_THREADS: 8
       # SERVER__MATCHER_SHORTENTURNS: true
-      
+
       # Map properties 
       MAP__DATABASE_HOST: map-server
       MAP__DATABASE_PORT: 5432

@@ -38,6 +38,7 @@ ENV PATH="/opt/osmosis/package/bin:/usr/lib/postgresql/9.3/bin:${PATH}"
 ENV OSM_DB_USER="osm" \
     OSM_DB_PASSWORD="osm" \
     OSM_DB_NAME="osm" \
+    OSM_MAP_MODE="slim" \
     OSM_PBF_PATH="NULL"
 
 COPY osm/import.sh /mnt/map/osm/
