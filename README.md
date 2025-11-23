@@ -22,6 +22,99 @@ Barefoot is designed for use in parallel and distributed high-throughput systems
 
 Barefoot is licensed under the business-friendly Apache License 2.0 and uses only business-friendly open source software with open map data from OpenStreetMap.
 
+## BAREFOOT-DOCKER-READY
+
+Barefoot is now ready to run with Docker Compose! This is the easiest way to get started with the full stack (Map Server, Matcher Server, and Tracker Server).
+
+### Quick Start
+
+1.  **Start all services:**
+
+    ```bash
+    docker-compose up -d
+    ```
+
+    This command will:
+    *   Build the `map-server` image (if not already built).
+    *   Build the `matcher-server` image.
+    *   Build the `tracker-server` image.
+    *   Start all three containers in the background.
+
+2.  **Access the services:**
+
+    *   **Map Server:** Running on port `5438` (mapped to internal `5432`).
+    *   **Matcher Server:** Running on port `1234`.
+    *   **Tracker Server:** Running on port `1235` (tracker) and `1236` (state).
+
+3.  **Verify:**
+
+    You can check the status of the containers with:
+
+    ```bash
+    docker-compose ps
+    ```
+
+    To view logs:
+
+    ```bash
+    docker-compose logs -f
+    ```
+
+### Configuration & Features
+
+The `docker-compose.yml` file is pre-configured with sensible defaults, but it's designed to be flexible.
+
+#### 1. Environment Variables
+You can configure the servers using environment variables in `docker-compose.yml`. The entrypoint scripts (`docker/matcher/entrypoint.sh` and `docker/tracker/entrypoint.sh`) automatically map these variables to the properties files.
+
+*   **Mapping Logic:**
+    1.  The script looks for variables starting with a specific prefix.
+    2.  It removes the prefix.
+    3.  It converts the rest of the name to **lowercase**.
+    4.  It replaces all underscores `_` with dots `.`.
+    *   *Example:* `SERVER__MATCHER_THREADS=8` becomes `matcher.threads=8`.
+
+*   **Prefixes:**
+    *   **Matcher Server:**
+        *   `SERVER__`: Maps to `config/server.properties` (e.g., `SERVER__SERVER_PORT`).
+        *   `MAP__`: Maps to `config/map.properties`.
+    *   **Tracker Server:**
+        *   `TRACKER__`: Maps to `config/tracker.properties` (e.g., `TRACKER__TRACKER_STATE_TTL`).
+        *   `MAP__`: Maps to `config/map.properties`.
+
+*   **Defaults:** The entrypoint scripts check if the configuration files exist. If not, they create them with default values (e.g., `matcher.threads=8`, `database.host=localhost`). This ensures the container runs out-of-the-box.
+
+#### 2. Automatic Map Import
+The `map-server` is smart! On the first initialization, if the database is empty, it automatically imports the OpenStreetMap data.
+
+*   **Process:**
+    1.  **Check:** The entrypoint (`map/entrypoint.sh`) checks if the configured database exists.
+    2.  **Import:** If not, it executes `map/osm/import.sh`.
+        *   **Database Setup:** Creates the database and installs PostGIS extensions.
+        *   **Osmosis:** Uses `osmosis` to read the PBF file (`MAP_OSM_PBF_PATH`) and populate the database.
+        *   **Routing Data:** Uses `osm2ways.py` and `ways2bfmap.py` to extract routing topology and create the `bfmap_ways` table.
+    3.  **Start:** Finally, it starts the PostgreSQL server in the foreground.
+
+*   **Configuration:**
+    *   `MAP_OSM_PBF_PATH`: Path to the input PBF file (default: `/mnt/data/ohare-filtered.osm.pbf`).
+    *   `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`: Database credentials.
+    *   `MAP_MODE`: Import mode (`slim` or `normal`).
+
+*   **Persistence:** The data is stored in the `barefoot-db` volume, so the import only happens once. Subsequent restarts are instant.
+
+#### 3. Port Mapping
+The services are exposed on the following ports:
+*   **Map Server (`5438:5432`):** The PostGIS database is accessible on host port `5438`. This allows you to connect with tools like QGIS or `psql` without conflicts if you have a local Postgres running on 5432.
+*   **Matcher Server (`1234:1234`):** The API for map matching.
+*   **Tracker Server:**
+    *   `1235:1234`: The tracker API port (mapped to internal 1234).
+    *   `1236:1235`: The tracker state port (mapped to internal 1235).
+
+#### 4. Default Configurations
+The base configuration files are located in the `./config` directory of the repository.
+*   These files (`server.properties`, `map.properties`, etc.) serve as the template.
+*   The Docker images use these templates and apply the environment variable overrides at runtime.
+
 ## Documentation
 
 ### Manual
