@@ -25,10 +25,10 @@ then
 	mode=$6
 elif [ "$#" -eq "0" ]
 then
-	input=/mnt/map/osm/ohare-filtered.osm.pbf
-	database=ohare
-	user=osmuser
-	password=pass
+	input=/mnt/map/osm/map.osm.pbf
+	database=osm
+	user=osm
+	password=osm
 	config=/mnt/map/tools/road-types.json
 	mode=slim
 else
