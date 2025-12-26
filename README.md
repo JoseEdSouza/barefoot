@@ -311,6 +311,19 @@ Online (real-time) map matching of a GPS trace in Munich city area with most lik
     node util/monitor/monitor.js 3000 127.0.0.1 1235
       ```
 
+### Tracker Payload
+
+The tracker server publishes state updates as JSON messages. Each update includes the following fields:
+
+* **id**: Object identifier.
+* **time**: Timestamp of the update.
+* **point**: Matched position on the map.
+* **osm_id**: OpenStreetMap ID of the road segment.
+* **osm_type**: Type of the road (e.g., motorway, residential).
+* **edge_gid**: Internal ID of the road segment.
+* **source**: Source node ID of the road segment.
+* **target**: Target node ID of the road segment.
+
 5. Test setup with provided sample data.
 
     ``` bash
