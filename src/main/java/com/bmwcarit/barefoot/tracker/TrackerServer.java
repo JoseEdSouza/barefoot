@@ -18,6 +18,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.bmwcarit.barefoot.road.BaseRoad;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,7 @@ public class TrackerServer extends AbstractServer {
      * </ul>
      *
      * @param properties {@link Properties} object with (optional) server and matcher settings.
-     * @param map {@link RoadMap} object with the map to be matched with.
+     * @param map        {@link RoadMap} object with the map to be matched with.
      */
     public TrackerServer(Properties properties, RoadMap map) {
         super(properties, new MatcherResponseFactory(properties, map));
@@ -214,8 +215,8 @@ public class TrackerServer extends AbstractServer {
                                         if (spatial.distance(previousSample.point(),
                                                 sample.point()) < sensitive
                                                 && previousEstimate.point().edge()
-                                                        .id() == state.inner.estimate().point()
-                                                                .edge().id()) {
+                                                .id() == state.inner.estimate().point()
+                                                .edge().id()) {
                                             publish = false;
                                             logger.debug("unpublished update");
                                         }
@@ -298,6 +299,16 @@ public class TrackerServer extends AbstractServer {
             try {
                 JSONObject json = state.inner.toMonitorJSON();
                 json.put("id", id);
+                MatcherCandidate estimate = state.inner.estimate();
+                if (estimate != null && estimate.point() != null) {
+                   RoadPoint pt = estimate.point();
+                   BaseRoad edge = pt.edge().base();
+                   json.put("osm_id", edge.refid());
+                   json.put("osm_type", edge.type());
+                   json.put("edge_gid", edge.id());
+                   json.put("source", edge.source());
+                   json.put("target", edge.target());
+                }
                 queue.put(json.toString());
             } catch (Exception e) {
                 logger.error("update failed: {}", e.getMessage());
