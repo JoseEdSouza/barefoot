@@ -31,7 +31,7 @@ Barefoot is now ready to run with Docker Compose! This is the easiest way to get
 1. **Start all services:**
 
     ```bash
-    docker-compose up -d
+    docker compose up -d
     ```
 
     > [!IMPORTANT]
@@ -58,13 +58,13 @@ Barefoot is now ready to run with Docker Compose! This is the easiest way to get
     You can check the status of the containers with:
 
     ```bash
-    docker-compose ps
+    docker compose ps
     ```
 
     To view logs:
 
     ```bash
-    docker-compose logs -f
+    docker compose logs -f
     ```
 
 ### Building from Source (Local Development)
@@ -72,7 +72,7 @@ Barefoot is now ready to run with Docker Compose! This is the easiest way to get
 If you want to build the images locally (e.g., for development or if you've made changes to the code), use the `local.docker-compose.yaml` file:
 
 ```bash
-docker-compose -f local.docker-compose.yaml up -d --build
+docker compose -f local.docker-compose.yaml up -d --build
 ```
 
 This will build the images from the local context instead of pulling them from the registry.
