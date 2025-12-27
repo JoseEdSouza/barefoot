@@ -323,6 +323,7 @@ The tracker server publishes state updates as JSON messages. Each update include
 * **edge_gid**: Internal ID of the road segment.
 * **source**: Source node ID of the road segment.
 * **target**: Target node ID of the road segment.
+* **path_osm_ids**: List of OpenStreetMap IDs representing the trajectory (path) sequence.
 
 5. Test setup with provided sample data.
 

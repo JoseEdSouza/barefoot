@@ -12,6 +12,8 @@
  */
 package com.bmwcarit.barefoot.tracker;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -266,7 +268,9 @@ public class TrackerServer extends AbstractServer {
         public State(String id) {
             super(id);
         }
-    };
+    }
+
+    ;
 
     private static class StatePublisher extends Thread implements Publisher<State> {
         private BlockingQueue<String> queue = new LinkedBlockingDeque<>();
@@ -297,19 +301,37 @@ public class TrackerServer extends AbstractServer {
         @Override
         public void publish(String id, TrackerServer.State state) {
             try {
+
                 JSONObject json = state.inner.toMonitorJSON();
                 json.put("id", id);
+
                 MatcherCandidate estimate = state.inner.estimate();
                 if (estimate != null && estimate.point() != null) {
-                   RoadPoint pt = estimate.point();
-                   BaseRoad edge = pt.edge().base();
-                   json.put("osm_id", edge.refid());
-                   json.put("osm_type", edge.type());
-                   json.put("edge_gid", edge.id());
-                   json.put("source", edge.source());
-                   json.put("target", edge.target());
+                    RoadPoint pt = estimate.point();
+                    BaseRoad edge = pt.edge().base();
+                    json.put("osm_id", edge.refid());
+                    json.put("osm_type", edge.type());
+                    json.put("edge_gid", edge.id());
+                    json.put("source", edge.source());
+                    json.put("target", edge.target());
                 }
+
+                List<MatcherCandidate> sequence = state.inner.sequence();
+                if (sequence == null || sequence.isEmpty()) {
+                    sequence = new ArrayList<>();
+                }
+                List<Long> trajectoryOsmIds = new ArrayList<>();
+                for (MatcherCandidate element : sequence) {
+                    if (element.point() != null) {
+                        RoadPoint pt = element.point();
+                        BaseRoad edge = pt.edge().base();
+                        trajectoryOsmIds.add(edge.refid());
+                    }
+                }
+                json.put("path_osm_ids", trajectoryOsmIds);
+
                 queue.put(json.toString());
+
             } catch (Exception e) {
                 logger.error("update failed: {}", e.getMessage());
                 e.printStackTrace();
