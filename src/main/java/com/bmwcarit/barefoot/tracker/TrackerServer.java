@@ -20,16 +20,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.bmwcarit.barefoot.matcher.*;
 import com.bmwcarit.barefoot.road.BaseRoad;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZMQ;
 
-import com.bmwcarit.barefoot.matcher.Matcher;
-import com.bmwcarit.barefoot.matcher.MatcherCandidate;
-import com.bmwcarit.barefoot.matcher.MatcherKState;
-import com.bmwcarit.barefoot.matcher.MatcherSample;
 import com.bmwcarit.barefoot.roadmap.Road;
 import com.bmwcarit.barefoot.roadmap.RoadMap;
 import com.bmwcarit.barefoot.roadmap.RoadPoint;
@@ -277,6 +274,21 @@ public class TrackerServer extends AbstractServer {
         private ZMQ.Context context = null;
         private ZMQ.Socket socket = null;
 
+        // remove duplicates from a list
+        private List<Long> dedup(List<Long> list) {
+            List<Long> result = new ArrayList<>();
+            if (list == null || list.isEmpty()) return result;
+
+            Long last = null;
+            for (Long val : list) {
+                if (!val.equals(last)) {
+                    result.add(val);
+                    last = val;
+                }
+            }
+            return result;
+        }
+
         public StatePublisher(int port) {
             context = ZMQ.context(1);
             socket = context.socket(ZMQ.PUB);
@@ -321,14 +333,19 @@ public class TrackerServer extends AbstractServer {
                     sequence = new ArrayList<>();
                 }
                 List<Long> trajectoryOsmIds = new ArrayList<>();
-                for (MatcherCandidate element : sequence) {
-                    if (element.point() != null) {
-                        RoadPoint pt = element.point();
+                for (MatcherCandidate candidate : sequence) {
+                    MatcherTransition transition = candidate.transition();
+                    if (transition != null && transition.route() != null) {
+                        for (Road segment : transition.route().path()) {
+                            trajectoryOsmIds.add(segment.base().refid());
+                        }
+                    } else if (candidate.point() != null) {
+                        RoadPoint pt = candidate.point();
                         BaseRoad edge = pt.edge().base();
                         trajectoryOsmIds.add(edge.refid());
                     }
                 }
-                json.put("path_osm_ids", trajectoryOsmIds);
+                json.put("path_osm_ids", dedup(trajectoryOsmIds));
 
                 queue.put(json.toString());
 
