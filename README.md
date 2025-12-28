@@ -325,6 +325,12 @@ The tracker server publishes state updates as JSON messages. Each update include
 * **target**: Target node ID of the road segment.
 * **path_osm_ids**: List of OpenStreetMap IDs representing the trajectory (path) sequence.
 
+### Matcher Payload
+
+The matcher server (when using `SlimJSONOutputFormatter`) provides a JSON response with map matching results. Significant fields include:
+
+* **path_osm_ids**: List of OpenStreetMap IDs representing the matched trajectory sequence, deduplicated to show unique road segments in order.
+
 5. Test setup with provided sample data.
 
     ``` bash
