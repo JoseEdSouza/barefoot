@@ -118,6 +118,22 @@ public class MatcherServer extends AbstractServer {
      */
     public static class SlimJSONOutputFormatter extends OutputFormatter {
 
+        @Override
+        public String format(String request, MatcherKState output) {
+            try {
+                return output.toSlimJSON().toString();
+            } catch (JSONException e) {
+                throw new RuntimeException("creating JSON response");
+            }
+        }
+    }
+
+    /**
+     * Output formatter for writing the geometries of a map matched paths into GeoJSON response
+     * message.
+     */
+    public static class GeoJSONOutputFormatter extends OutputFormatter {
+
         private static List<Long> dedup(List<Long> ids) {
             List<Long> result = new ArrayList<>();
             for (Long id : ids) {
@@ -131,8 +147,7 @@ public class MatcherServer extends AbstractServer {
         @Override
         public String format(String request, MatcherKState output) {
             try {
-
-                JSONObject json = output.toJSON();
+                JSONObject json = output.toGeoJSON();
 
                 List<MatcherCandidate> sequence = output.sequence();
                 if (sequence == null || sequence.isEmpty()) {
@@ -151,24 +166,11 @@ public class MatcherServer extends AbstractServer {
                         trajectoryOsmIds.add(edge.refid());
                     }
                 }
+
                 json.put("path_osm_ids", dedup(trajectoryOsmIds));
 
                 return json.toString();
-            } catch (JSONException e) {
-                throw new RuntimeException("creating JSON response");
-            }
-        }
-    }
 
-    /**
-     * Output formatter for writing the geometries of a map matched paths into GeoJSON response
-     * message.
-     */
-    public static class GeoJSONOutputFormatter extends OutputFormatter {
-        @Override
-        public String format(String request, MatcherKState output) {
-            try {
-                return output.toGeoJSON().toString();
             } catch (JSONException e) {
                 throw new RuntimeException("creating JSON response");
             }

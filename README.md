@@ -327,9 +327,9 @@ The tracker server publishes state updates as JSON messages. Each update include
 
 ### Matcher Payload
 
-The matcher server (when using `SlimJSONOutputFormatter`) provides a JSON response with map matching results. Significant fields include:
+The matcher server (when using `GeoJSONOutputFormatter`) provides a GeoJSON response with map matching results. Significant fields include:
 
-* **path_osm_ids**: List of OpenStreetMap IDs representing the matched trajectory sequence, deduplicated to show unique road segments in order.
+* **path_osm_ids**: List of OpenStreetMap IDs representing the matched trajectory sequence, deduplicated to show unique road segments in order. (Note: Only available in `geojson` format).
 
 5. Test setup with provided sample data.
 
